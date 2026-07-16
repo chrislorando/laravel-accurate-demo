@@ -38,8 +38,16 @@ return [
     'scopes' => [
         'item_view',
         'item_save',
+        'item_delete',
         'item_category_view',
         'item_category_save',
+        'item_category_delete',
+        'unit_view',
+        'unit_save',
+        'unit_delete',
+        'warehouse_view',
+        'warehouse_save',
+        'warehouse_delete',
     ],
 
 ];
