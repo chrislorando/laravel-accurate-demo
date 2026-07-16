@@ -1,16 +1,18 @@
 # Laravel Accurate Demo
 
-Aplikasi demo / _sandbox_ untuk mencoba package **[chrislorando/laravel-accurate](https://github.com/chrislorando/laravel-accurate)** — wrapper Laravel untuk [Accurate](https://accurate.id/) API.
+A demo / _sandbox_ app for trying out the **[chrislorando/laravel-accurate](https://github.com/chrislorando/laravel-accurate)** package — a Laravel wrapper for the [Accurate](https://accurate.id/) API.
 
-Dibangun dengan **Laravel 13**, **Filament v5**, dan **Livewire v4**.
+Built with **Laravel 13**, **Filament v5**, and **Livewire v4**.
 
-## Fitur Demo
+## Demo Features
 
-- **Dashboard widget** — daftar database Accurate yang terkoneksi, bisa _switch_ database aktif
-- **Item List** (`/admin/accurate-item`) — CRUD, search, sort, pagination data Item dari Accurate API
-- **Kategori Item** (`/admin/accurate-item-category`) — CRUD, search, sort, pagination data Kategori Item dari Accurate API
+- **Dashboard widget** — list of connected Accurate databases, switch active database
+- **Items** (`/admin/accurate-items`) — CRUD, search, sort, pagination for Item data via Accurate API
+- **Item Categories** (`/admin/accurate-item-categories`) — CRUD, search, sort, pagination for Item Category data via Accurate API
+- **Units** (`/admin/accurate-units`) — CRUD, search, sort, pagination for Unit data via Accurate API
+- **Warehouses** (`/admin/accurate-warehouses`) — CRUD, search, sort, pagination for Warehouse data via Accurate API
 
-## Instalasi
+## Installation
 
 ```bash
 git clone https://github.com/nama-user/laravel-accurate-demo.git
@@ -21,7 +23,7 @@ cp .env.example .env
 php artisan key:generate
 ```
 
-Konfigurasi kredensial Accurate di `.env`:
+Configure Accurate credentials in `.env`:
 
 ```
 ACCURATE_CLIENT_ID=
@@ -34,27 +36,29 @@ npm install && npm run build
 php artisan serve
 ```
 
-Buka `/admin` untuk mengakses panel Filament.
+Open `/admin` to access the Filament panel.
 
-## Package yang Digunakan
+## Packages Used
 
-| Package                                                                           | Versi    |
+| Package                                                                           | Version  |
 | --------------------------------------------------------------------------------- | -------- |
-| [chrislorando/laravel-accurate](https://github.com/chrislorando/laravel-accurate) | ^0.2     |
+| [chrislorando/laravel-accurate](https://github.com/chrislorando/laravel-accurate) | ^0.5     |
 | [laravel/framework](https://laravel.com)                                          | ^13      |
 | [filament/filament](https://filamentphp.com)                                      | ^5       |
 | [livewire/livewire](https://livewire.laravel.com)                                 | ^4       |
 | [laravel/boost](https://laravel.com/docs/ai)                                      | ^2 (dev) |
 
-## Struktur Penting
+## Key Structure
 
 ```
 app/Filament/
 ├── Pages/
-│   ├── AccurateItem.php          # Halaman CRUD Item
-│   └── AccurateItemCategory.php  # Halaman CRUD Kategori Item
+│   ├── AccurateItem.php          # Item CRUD page
+│   ├── AccurateItemCategory.php  # Item Category CRUD page
+│   ├── AccurateUnit.php          # Unit CRUD page
+│   └── AccurateWarehouse.php     # Warehouse CRUD page
 └── Widgets/
-    └── AccurateDatabasesWidget.php  # Widget pilih database
+    └── AccurateDatabasesWidget.php  # Database switcher widget
 ```
 
 ## License
