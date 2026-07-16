@@ -22,9 +22,9 @@ class AccurateItem extends Page implements HasTable
 {
     use InteractsWithTable;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-shopping-bag';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Accurate';
+    protected static string|UnitEnum|null $navigationGroup = 'Accurate';
 
     protected static ?string $title = 'Barang & Jasa';
 
@@ -73,7 +73,7 @@ class AccurateItem extends Page implements HasTable
             ->paginated([10, 25, 50, 100])
             ->defaultPaginationPageOption(10)
             ->recordActions([
-                 Action::make('view')
+                Action::make('view')
                     ->color('gray')
                     ->icon(Heroicon::Eye)
                     ->modalHeading(fn (array $record): string => $record['name'] ?? 'Detail Barang')
@@ -293,9 +293,7 @@ class AccurateItem extends Page implements HasTable
         }
 
         try {
-            $query = Accurate::connection('default')
-                ->openDatabase($db->database_id)
-                ->items()
+            $query = Accurate::items()
                 ->query()
                 ->select('id', 'no', 'name', 'itemTypeName', 'unitPrice', 'unit1');
 
@@ -339,10 +337,7 @@ class AccurateItem extends Page implements HasTable
         }
 
         try {
-            $result = Accurate::connection('default')
-                ->openDatabase($db->database_id)
-                ->items()
-                ->detail($id);
+            $result = Accurate::items()->detail($id);
 
             return $result['d'] ?? [];
         } catch (\Throwable $e) {
@@ -370,10 +365,7 @@ class AccurateItem extends Page implements HasTable
         }
 
         try {
-            Accurate::connection('default')
-                ->openDatabase($db->database_id)
-                ->items()
-                ->save($data);
+            Accurate::items()->save($data);
 
             Notification::make()
                 ->title($id ? 'Item berhasil diupdate' : 'Item berhasil dibuat')
@@ -406,10 +398,7 @@ class AccurateItem extends Page implements HasTable
         }
 
         try {
-            Accurate::connection('default')
-                ->openDatabase($db->database_id)
-                ->items()
-                ->delete($id);
+            Accurate::items()->delete($id);
 
             Notification::make()
                 ->title("Item \"{$name}\" berhasil dihapus")

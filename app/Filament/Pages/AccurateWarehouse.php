@@ -4,6 +4,8 @@ namespace App\Filament\Pages;
 
 use ChrisLorando\LaravelAccurate\Facades\Accurate;
 use Filament\Actions\Action;
+use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
@@ -18,45 +20,41 @@ use Filament\Tables\Table;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use UnitEnum;
 
-class AccurateItemCategory extends Page implements HasTable
+class AccurateWarehouse extends Page implements HasTable
 {
     use InteractsWithTable;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-tag';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-building-storefront';
 
     protected static string|UnitEnum|null $navigationGroup = 'Accurate';
 
-    protected static ?string $title = 'Kategori Barang';
+    protected static ?string $title = 'Gudang';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 4;
 
-    protected string $view = 'filament.pages.accurate-item-category';
+    protected string $view = 'filament.pages.accurate-warehouse';
 
     public function table(Table $table): Table
     {
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label('Nama Kategori')
+                    ->label('Nama Gudang')
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('parent.name')
-                    ->label('Parent Kategori')
-                    ->placeholder('-'),
+                TextColumn::make('pic')
+                    ->label('PIC')
+                    ->searchable(),
 
-                IconColumn::make('defaultCategory')
-                    ->label('Default')
-                    ->boolean()
-                    ->trueIcon(Heroicon::CheckCircle)
-                    ->falseIcon(Heroicon::XCircle),
+                TextColumn::make('description')
+                    ->label('Deskripsi')
+                    ->limit(50),
 
-                IconColumn::make('suspended')
-                    ->label('Aktif')
-                    ->boolean()
-                    ->trueIcon(Heroicon::CheckCircle)
-                    ->falseIcon(Heroicon::XCircle)
-                    ->state(fn (array $record): bool => ! ($record['suspended'] ?? false)),
+                TextColumn::make('address.street')
+                    ->label('Alamat')
+                    ->limit(50),
+
             ])
             ->emptyStateHeading('Belum ada koneksi Accurate')
             ->emptyStateDescription('Hubungkan akun Accurate terlebih dahulu melalui OAuth.')
@@ -66,64 +64,46 @@ class AccurateItemCategory extends Page implements HasTable
             ->paginated([10, 25, 50, 100])
             ->defaultPaginationPageOption(10)
             ->recordActions([
-                Action::make('view')
-                    ->color('gray')
-                    ->icon(Heroicon::Eye)
-                    ->modalHeading(fn (array $record): string => $record['name'] ?? 'Detail Kategori')
-                    ->fillForm(fn (array $record): array => $this->fetchCategoryDetail($record['id']))
-                    ->schema([
-                        Section::make('Informasi Kategori')
-                            ->schema([
-                                Grid::make(2)
-                                    ->schema([
-                                        TextInput::make('name')
-                                            ->label('Nama Kategori')
-                                            ->disabled(),
-                                        TextInput::make('parent.name')
-                                            ->label('Parent Kategori')
-                                            ->disabled()
-                                            ->placeholder('-'),
-                                        TextInput::make('suspended')
-                                            ->label('Status')
-                                            ->disabled(),
-                                        TextInput::make('defaultCategory')
-                                            ->label('Kategori Default')
-                                            ->disabled(),
-                                    ]),
-                            ]),
-                    ])
-                    ->modalSubmitAction(false)
-                    ->modalCancelActionLabel('Tutup'),
-
                 Action::make('edit')
                     ->icon(Heroicon::PencilSquare)
-                    ->modalHeading(fn (array $record): string => 'Edit: '.($record['name'] ?? 'Kategori'))
-                    ->fillForm(fn (array $record): array => $this->fetchCategoryDetail($record['id']))
+                    ->modalHeading(fn (array $record): string => 'Edit: '.($record['name'] ?? 'Gudang'))
+                    ->fillForm(fn (array $record): array => $this->fetchWarehouseDetail($record['id']))
                     ->schema([
                         Section::make()
                             ->schema([
                                 Grid::make(2)
                                     ->schema([
                                         TextInput::make('name')
-                                            ->label('Nama Kategori')
+                                            ->label('Nama Gudang')
                                             ->required()
                                             ->maxLength(200),
+                                        TextInput::make('pic')
+                                            ->label('PIC')
+                                            ->maxLength(100),
+                                        Checkbox::make('scrapWarehouse')
+                                            ->label('Gudang Scrap'),
+                                        Textarea::make('street')
+                                            ->label('Alamat')
+                                            ->columnSpanFull(),
+                                        Textarea::make('description')
+                                            ->label('Deskripsi')
+                                            ->columnSpanFull(),
                                     ]),
                             ]),
                     ])
                     ->action(function (array $data, array $record): void {
-                        $this->saveCategory($data, $record['id']);
+                        $this->saveWarehouse($data, $record['id']);
                     }),
 
                 Action::make('delete')
                     ->color('danger')
                     ->icon(Heroicon::Trash)
-                    ->modalHeading(fn (array $record): string => 'Hapus: '.($record['name'] ?? 'Kategori'))
-                    ->modalDescription('Kategori yang sudah dihapus tidak dapat dikembalikan.')
+                    ->modalHeading(fn (array $record): string => 'Hapus: '.($record['name'] ?? 'Gudang'))
+                    ->modalDescription('Gudang yang sudah dihapus tidak dapat dikembalikan.')
                     ->modalSubmitActionLabel('Hapus')
                     ->requiresConfirmation()
                     ->action(function (array $record): void {
-                        $this->deleteCategory($record['id'], $record['name'] ?? '');
+                        $this->deleteWarehouse($record['id'], $record['name'] ?? '');
                     }),
             ])
             ->toolbarActions([
@@ -137,18 +117,29 @@ class AccurateItemCategory extends Page implements HasTable
                                 Grid::make(2)
                                     ->schema([
                                         TextInput::make('name')
-                                            ->label('Nama Kategori')
+                                            ->label('Nama Gudang')
                                             ->required()
                                             ->maxLength(200),
+                                        TextInput::make('pic')
+                                            ->label('PIC')
+                                            ->maxLength(100),
+                                        Checkbox::make('scrapWarehouse')
+                                            ->label('Gudang Scrap'),
+                                        Textarea::make('street')
+                                            ->label('Alamat')
+                                            ->columnSpanFull(),
+                                        Textarea::make('description')
+                                            ->label('Deskripsi')
+                                            ->columnSpanFull(),
                                     ]),
                             ]),
                     ])
                     ->action(function (array $data): void {
-                        $this->saveCategory($data);
+                        $this->saveWarehouse($data);
                     }),
             ])
             ->records(function (?string $search, int $page, int $recordsPerPage): LengthAwarePaginator {
-                return $this->fetchCategories(
+                return $this->fetchWarehouses(
                     page: $page,
                     recordsPerPage: $recordsPerPage,
                     search: $search,
@@ -158,7 +149,7 @@ class AccurateItemCategory extends Page implements HasTable
             });
     }
 
-    protected function fetchCategories(
+    protected function fetchWarehouses(
         int $page,
         int $recordsPerPage,
         ?string $search = null,
@@ -172,9 +163,9 @@ class AccurateItemCategory extends Page implements HasTable
         }
 
         try {
-            $query = Accurate::itemCategories()
+            $query = Accurate::warehouses()
                 ->query()
-                ->select('id', 'name', 'defaultCategory', 'suspended', 'parent');
+                ->select('id', 'name', 'pic', 'description', 'street');
 
             if (filled($search)) {
                 $query->where('name', 'like', $search);
@@ -191,11 +182,11 @@ class AccurateItemCategory extends Page implements HasTable
                 ->page($page)
                 ->paginate();
 
-            $categories = collect($result['data'] ?? []);
+            $warehouses = collect($result['data'] ?? []);
             $total = (int) ($result['sp']['total'] ?? 0);
 
             return new \Illuminate\Pagination\LengthAwarePaginator(
-                items: $categories,
+                items: $warehouses,
                 total: $total,
                 perPage: $recordsPerPage,
                 currentPage: $page,
@@ -207,7 +198,7 @@ class AccurateItemCategory extends Page implements HasTable
         }
     }
 
-    protected function fetchCategoryDetail(string $id): array
+    protected function fetchWarehouseDetail(string $id): array
     {
         $db = Accurate::currentDatabase();
 
@@ -216,7 +207,7 @@ class AccurateItemCategory extends Page implements HasTable
         }
 
         try {
-            $result = Accurate::itemCategories()->detail($id);
+            $result = Accurate::warehouses()->detail($id);
 
             return $result['d'] ?? [];
         } catch (\Throwable $e) {
@@ -226,7 +217,7 @@ class AccurateItemCategory extends Page implements HasTable
         }
     }
 
-    protected function saveCategory(array $data, ?string $id = null): void
+    protected function saveWarehouse(array $data, ?string $id = null): void
     {
         $db = Accurate::currentDatabase();
 
@@ -244,10 +235,10 @@ class AccurateItemCategory extends Page implements HasTable
         }
 
         try {
-            Accurate::itemCategories()->save($data);
+            Accurate::warehouses()->save($data);
 
             Notification::make()
-                ->title($id ? 'Kategori berhasil diupdate' : 'Kategori berhasil dibuat')
+                ->title($id ? 'Gudang berhasil diupdate' : 'Gudang berhasil dibuat')
                 ->success()
                 ->send();
 
@@ -256,14 +247,14 @@ class AccurateItemCategory extends Page implements HasTable
             report($e);
 
             Notification::make()
-                ->title('Gagal menyimpan kategori')
+                ->title('Gagal menyimpan gudang')
                 ->body($e->getMessage())
                 ->danger()
                 ->send();
         }
     }
 
-    protected function deleteCategory(string $id, string $name): void
+    protected function deleteWarehouse(string $id, string $name): void
     {
         $db = Accurate::currentDatabase();
 
@@ -277,10 +268,10 @@ class AccurateItemCategory extends Page implements HasTable
         }
 
         try {
-            Accurate::itemCategories()->delete($id);
+            Accurate::warehouses()->delete($id);
 
             Notification::make()
-                ->title("Kategori \"{$name}\" berhasil dihapus")
+                ->title("Gudang \"{$name}\" berhasil dihapus")
                 ->success()
                 ->send();
 
@@ -289,7 +280,7 @@ class AccurateItemCategory extends Page implements HasTable
             report($e);
 
             Notification::make()
-                ->title('Gagal menghapus kategori')
+                ->title('Gagal menghapus gudang')
                 ->body($e->getMessage())
                 ->danger()
                 ->send();
