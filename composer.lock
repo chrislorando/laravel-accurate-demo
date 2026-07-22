@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7981c3be68665f457b723eba7f94becf",
+    "content-hash": "8d5fafbe9ecb5bebf591597138d747eb",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -513,16 +513,16 @@
         },
         {
             "name": "chrislorando/laravel-accurate",
-            "version": "v0.5.0",
+            "version": "v0.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/chrislorando/laravel-accurate.git",
-                "reference": "7005b3a086e9ee8b572b79a56873a4ab92e67e11"
+                "reference": "5cc60b0c13c660ad0caf0354511c7ea044537766"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/chrislorando/laravel-accurate/zipball/7005b3a086e9ee8b572b79a56873a4ab92e67e11",
-                "reference": "7005b3a086e9ee8b572b79a56873a4ab92e67e11",
+                "url": "https://api.github.com/repos/chrislorando/laravel-accurate/zipball/5cc60b0c13c660ad0caf0354511c7ea044537766",
+                "reference": "5cc60b0c13c660ad0caf0354511c7ea044537766",
                 "shasum": ""
             },
             "require": {
@@ -590,7 +590,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-07-16T10:54:12+00:00"
+            "time": "2026-07-17T17:56:10+00:00"
         },
         {
             "name": "danharrin/date-format-converter",

@@ -7,7 +7,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
-        "chrislorando/laravel-accurate": "^0.5.0",
+        "chrislorando/laravel-accurate": "^0.6.0",
         "filament/filament": "5.*",
         "laravel/framework": "^13.8",
         "laravel/tinker": "^3.0"
