@@ -40,9 +40,11 @@ Open `/admin` to access the Filament panel.
 
 ## Demo
 
+```text
 https://personal-projects-laravel-accurate-demo.isqfjy.easypanel.host/admin/login
 username : demo@example.com
 password : password
+```
 
 ## Packages Used
 
